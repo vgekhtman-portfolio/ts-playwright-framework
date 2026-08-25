@@ -1,0 +1,16 @@
+node_modules/
+
+.docs-agent/
+
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+allure-results/
+allure-report/
+
+.env
+.env.local
+
+*.log

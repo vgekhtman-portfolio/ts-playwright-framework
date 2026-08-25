@@ -3,7 +3,9 @@ import { env } from './utils/env';
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  // Concurrent auth calls can be attributed to the wrong user on this
+  // backend, so workers are pinned to 1.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: [['html', { open: 'never' }]],

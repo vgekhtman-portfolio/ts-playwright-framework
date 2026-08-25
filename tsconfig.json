@@ -14,14 +14,5 @@
     "resolveJsonModule": true,
     "types": ["node", "@playwright/test"]
   },
-  "include": [
-    "tests",
-    "pages",
-    "components",
-    "fixtures",
-    "data",
-    "utils",
-    "api",
-    "playwright.config.ts"
-  ]
+  "include": ["tests", "pages", "fixtures", "data", "utils", "api", "playwright.config.ts"]
 }

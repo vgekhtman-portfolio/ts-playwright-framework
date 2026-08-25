@@ -24,11 +24,9 @@ async function fetchCurrentUsername(
 }
 
 /**
- * The public demo backend issues auth tokens per client session rather than
- * per credential: registrations that happen close together in time can
- * receive a token that actually identifies a different, concurrently
- * registered user. Verify the returned token before trusting it, and retry
- * with fresh data on mismatch.
+ * This backend can return a token that identifies a different, concurrently
+ * registered user. Verify identity before trusting the token, and retry on
+ * mismatch.
  */
 export async function registerUser(
   request: APIRequestContext,

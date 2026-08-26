@@ -36,5 +36,9 @@ export class ArticleEditorPage {
 
   async publish(): Promise<void> {
     await this.publishButton.click();
+    // Publishing (including an edit that changes the title) redirects to
+    // the resulting article page; without waiting for it, a slow redirect
+    // leaves the caller reading the pre-publish page a moment longer.
+    await this.page.waitForURL(/\/article\//);
   }
 }

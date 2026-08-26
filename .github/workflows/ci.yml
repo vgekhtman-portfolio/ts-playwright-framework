@@ -101,8 +101,10 @@ jobs:
     needs: allure-report
     # A pull_request run builds from a synthetic merge commit, which the
     # github-pages environment's branch protection rejects, so only deploy
-    # on push events (which target a real branch).
-    if: github.event_name == 'push'
+    # on push events. Scoped to main specifically: the github-pages
+    # environment only allows deploying from main anyway, and the public
+    # report should reflect the stable branch, not in-progress develop.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write

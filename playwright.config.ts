@@ -3,8 +3,12 @@ import { env } from './utils/env';
 
 export default defineConfig({
   testDir: './tests',
-  // Concurrent auth calls can be attributed to the wrong user on this
-  // backend, so workers are pinned to 1.
+  // This backend attributes requests to the wrong session under concurrent
+  // load: with workers > 1, a worker's own just-created article/comment
+  // intermittently 404s when that same worker immediately reads it back.
+  // Confirmed empirically (workers: 4 turned 28/28 passing into 8 failures,
+  // all read-your-own-write races); the suite itself has no shared mutable
+  // state or execution-order dependencies.
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

@@ -13,14 +13,14 @@ function authHeader(token: string) {
   return { Authorization: `Token ${token}` };
 }
 
-async function fetchCurrentUsername(
+export async function getCurrentUser(
   request: APIRequestContext,
   token: string,
-): Promise<string | undefined> {
+): Promise<{ username: string; email: string } | undefined> {
   const response = await request.get('user', { headers: authHeader(token) });
   if (!response.ok()) return undefined;
   const { user } = await response.json();
-  return user.username;
+  return user;
 }
 
 /**
@@ -41,7 +41,8 @@ export async function registerUser(
     ).toBeTruthy();
     const { user: registered } = await response.json();
 
-    if ((await fetchCurrentUsername(request, registered.token)) === user.username) {
+    const current = await getCurrentUser(request, registered.token);
+    if (current?.username === user.username) {
       return { ...user, token: registered.token };
     }
   }
@@ -90,7 +91,10 @@ export async function favoriteArticle(
   slug: string,
 ): Promise<void> {
   const response = await request.post(`articles/${slug}/favorite`, { headers: authHeader(token) });
-  expect(response.ok(), `favorite failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `favorite failed: ${response.status()} ${await response.text()}`,
+  ).toBeTruthy();
 }
 
 export async function unfavoriteArticle(
@@ -99,7 +103,10 @@ export async function unfavoriteArticle(
   slug: string,
 ): Promise<void> {
   const response = await request.delete(`articles/${slug}/favorite`, { headers: authHeader(token) });
-  expect(response.ok(), `unfavorite failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `unfavorite failed: ${response.status()} ${await response.text()}`,
+  ).toBeTruthy();
 }
 
 export async function followUser(
@@ -108,7 +115,10 @@ export async function followUser(
   username: string,
 ): Promise<void> {
   const response = await request.post(`profiles/${username}/follow`, { headers: authHeader(token) });
-  expect(response.ok(), `follow failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `follow failed: ${response.status()} ${await response.text()}`,
+  ).toBeTruthy();
 }
 
 export async function unfollowUser(
@@ -117,7 +127,10 @@ export async function unfollowUser(
   username: string,
 ): Promise<void> {
   const response = await request.delete(`profiles/${username}/follow`, { headers: authHeader(token) });
-  expect(response.ok(), `unfollow failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `unfollow failed: ${response.status()} ${await response.text()}`,
+  ).toBeTruthy();
 }
 
 export async function addComment(
@@ -130,7 +143,10 @@ export async function addComment(
     headers: authHeader(token),
     data: { comment: { body } },
   });
-  expect(response.ok(), `add comment failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `add comment failed: ${response.status()} ${await response.text()}`,
+  ).toBeTruthy();
   const { comment } = await response.json();
   return comment;
 }

@@ -4,7 +4,9 @@ export class ArticleList {
   readonly previews: Locator;
 
   constructor(page: Page) {
-    this.previews = page.locator('.article-preview');
+    // The app's own empty-feed placeholder also carries the article-preview
+    // class, so it must be excluded to count only real article cards.
+    this.previews = page.locator('.article-preview:not(.empty-feed-message)');
   }
 
   preview(title: string): Locator {

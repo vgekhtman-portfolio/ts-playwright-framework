@@ -20,7 +20,15 @@ export class ArticleEditorPage {
   }
 
   async gotoEdit(slug: string): Promise<void> {
+    // The editor fetches the article's current data and populates the form
+    // with it after navigating; without waiting for that response, filling
+    // the form immediately can race with it and get silently overwritten.
+    const loaded = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' && response.url().includes(`/articles/${slug}`),
+    );
     await this.page.goto(`/editor/${slug}`);
+    await loaded;
   }
 
   async fill(article: { title: string; description: string; body: string }): Promise<void> {

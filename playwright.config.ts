@@ -18,21 +18,30 @@ export default defineConfig({
   ],
   use: {
     baseURL: env.baseURL,
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'on-first-retry',
+    video: 'retain-on-failure',
   },
   projects: [
+    // API tests never touch a browser, so they run once here rather than
+    // once per browser project below.
+    {
+      name: 'api',
+      testDir: './tests/api',
+    },
     {
       name: 'chromium',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Safari'] },
     },
   ],

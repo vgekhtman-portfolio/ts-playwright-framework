@@ -1,0 +1,17 @@
+services:
+  tests:
+    build: .
+    # Passed through only if set on the host; utils/env.ts's own defaults
+    # apply otherwise, so the default SUT URLs live in exactly one place.
+    environment:
+      - BASE_URL
+      - API_BASE_URL
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+    # Docker's default /dev/shm is too small for Chromium/Firefox/WebKit
+    # under load.
+    shm_size: "2gb"
+
+volumes:
+  node_modules:

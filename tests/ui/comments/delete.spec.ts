@@ -10,7 +10,12 @@ test.describe('Delete comment', () => {
     apiContext,
   }) => {
     const article = await createArticle(apiContext, authenticatedUser.token, uniqueArticle());
-    const comment = await addComment(apiContext, authenticatedUser.token, article.slug, uniqueComment());
+    const comment = await addComment(
+      apiContext,
+      authenticatedUser.token,
+      article.slug,
+      uniqueComment(),
+    );
 
     const articlePage = new ArticlePage(authenticatedPage);
     await articlePage.goto(article.slug);

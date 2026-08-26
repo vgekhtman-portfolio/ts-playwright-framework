@@ -17,6 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # The shared public backend misattributes requests under concurrent
+      # load (see playwright.config.ts), so matrix jobs run one at a time
+      # rather than GitHub's default of all-at-once.
+      max-parallel: 1
       matrix:
         project: ${{ github.event_name == 'pull_request' && fromJSON('["chromium", "api"]') || fromJSON('["chromium", "firefox", "webkit", "api"]') }}
     steps:

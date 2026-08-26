@@ -22,6 +22,10 @@ export function uniqueUser(): UserData {
   };
 }
 
+export function uniqueComment(): string {
+  return `${faker.lorem.sentence()} ${faker.string.alphanumeric(6)}`;
+}
+
 export function uniqueArticle(): ArticleData {
   return {
     title: `${faker.lorem.words({ min: 3, max: 6 })} ${faker.string.alphanumeric(6)}`,

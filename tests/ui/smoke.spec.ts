@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
+import { HomePage } from '../../pages/HomePage';
+import { Header } from '../../pages/components/Header';
 
 test('home page loads and shows the global feed', async ({ page }) => {
-  await page.goto('/');
+  const home = new HomePage(page);
+  const header = new Header(page);
+  await home.goto();
 
   await expect(page).toHaveTitle('Conduit');
-  await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Global Feed' })).toBeVisible();
+  await expect(header.signInLink).toBeVisible();
+  await expect(home.globalFeedTab).toBeVisible();
 });

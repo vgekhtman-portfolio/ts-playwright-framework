@@ -1,5 +1,4 @@
 import type { APIRequestContext, APIResponse } from '@playwright/test';
-import { expect } from '@playwright/test';
 import { uniqueUser, uniqueArticle, type ArticleData } from '../utils/testData';
 
 export interface AuthenticatedUser {
@@ -11,6 +10,13 @@ export interface AuthenticatedUser {
 
 function authHeader(token: string) {
   return { Authorization: `Token ${token}` };
+}
+
+// response.ok() accepts any 200-299 status, not just 200 (e.g. 201 Created).
+async function assertOk(response: APIResponse, action: string): Promise<void> {
+  if (!response.ok()) {
+    throw new Error(`${action} failed: ${response.status()} ${await response.text()}`);
+  }
 }
 
 export async function getCurrentUser(
@@ -35,10 +41,7 @@ export async function registerUser(
   for (let attempt = 1; attempt <= retries; attempt += 1) {
     const user = uniqueUser();
     const response = await request.post('users', { data: { user } });
-    expect(
-      response.ok(),
-      `registration failed: ${response.status()} ${await response.text()}`,
-    ).toBeTruthy();
+    await assertOk(response, 'registration');
     const { user: registered } = await response.json();
 
     const current = await getCurrentUser(request, registered.token);
@@ -61,10 +64,7 @@ export async function createArticle(
     headers: authHeader(token),
     data: { article },
   });
-  expect(
-    response.ok(),
-    `create article failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'create article');
   const { article: created } = await response.json();
   return created;
 }
@@ -91,10 +91,7 @@ export async function favoriteArticle(
   slug: string,
 ): Promise<void> {
   const response = await request.post(`articles/${slug}/favorite`, { headers: authHeader(token) });
-  expect(
-    response.ok(),
-    `favorite failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'favorite');
 }
 
 export async function unfavoriteArticle(
@@ -105,10 +102,7 @@ export async function unfavoriteArticle(
   const response = await request.delete(`articles/${slug}/favorite`, {
     headers: authHeader(token),
   });
-  expect(
-    response.ok(),
-    `unfavorite failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'unfavorite');
 }
 
 export async function followUser(
@@ -119,10 +113,7 @@ export async function followUser(
   const response = await request.post(`profiles/${username}/follow`, {
     headers: authHeader(token),
   });
-  expect(
-    response.ok(),
-    `follow failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'follow');
 }
 
 export async function unfollowUser(
@@ -133,10 +124,7 @@ export async function unfollowUser(
   const response = await request.delete(`profiles/${username}/follow`, {
     headers: authHeader(token),
   });
-  expect(
-    response.ok(),
-    `unfollow failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'unfollow');
 }
 
 export async function addComment(
@@ -149,10 +137,7 @@ export async function addComment(
     headers: authHeader(token),
     data: { comment: { body } },
   });
-  expect(
-    response.ok(),
-    `add comment failed: ${response.status()} ${await response.text()}`,
-  ).toBeTruthy();
+  await assertOk(response, 'add comment');
   const { comment } = await response.json();
   return comment;
 }

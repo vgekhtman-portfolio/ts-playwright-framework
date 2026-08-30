@@ -18,7 +18,6 @@ test.describe('UI action, API verification', () => {
     await editor.publish();
     // Editing the title changes the slug, so read back the slug the UI
     // redirected to rather than reusing the pre-edit one.
-    await authenticatedPage.waitForURL(/\/article\//);
     const currentSlug = new URL(authenticatedPage.url()).pathname.split('/').pop()!;
 
     try {

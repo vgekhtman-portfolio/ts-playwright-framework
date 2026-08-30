@@ -102,7 +102,9 @@ export async function unfavoriteArticle(
   token: string,
   slug: string,
 ): Promise<void> {
-  const response = await request.delete(`articles/${slug}/favorite`, { headers: authHeader(token) });
+  const response = await request.delete(`articles/${slug}/favorite`, {
+    headers: authHeader(token),
+  });
   expect(
     response.ok(),
     `unfavorite failed: ${response.status()} ${await response.text()}`,
@@ -114,7 +116,9 @@ export async function followUser(
   token: string,
   username: string,
 ): Promise<void> {
-  const response = await request.post(`profiles/${username}/follow`, { headers: authHeader(token) });
+  const response = await request.post(`profiles/${username}/follow`, {
+    headers: authHeader(token),
+  });
   expect(
     response.ok(),
     `follow failed: ${response.status()} ${await response.text()}`,
@@ -126,7 +130,9 @@ export async function unfollowUser(
   token: string,
   username: string,
 ): Promise<void> {
-  const response = await request.delete(`profiles/${username}/follow`, { headers: authHeader(token) });
+  const response = await request.delete(`profiles/${username}/follow`, {
+    headers: authHeader(token),
+  });
   expect(
     response.ok(),
     `unfollow failed: ${response.status()} ${await response.text()}`,

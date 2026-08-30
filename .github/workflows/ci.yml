@@ -12,11 +12,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Typecheck, lint, format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
   test:
     name: Test (${{ matrix.project }})
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # The shared public backend misattributes requests under concurrent
+      # load (see playwright.config.ts), so matrix jobs run one at a time
+      # rather than GitHub's default of all-at-once.
+      max-parallel: 1
       matrix:
         project: ${{ github.event_name == 'pull_request' && fromJSON('["chromium", "api"]') || fromJSON('["chromium", "firefox", "webkit", "api"]') }}
     steps:
@@ -97,8 +125,10 @@ jobs:
     needs: allure-report
     # A pull_request run builds from a synthetic merge commit, which the
     # github-pages environment's branch protection rejects, so only deploy
-    # on push events (which target a real branch).
-    if: github.event_name == 'push'
+    # on push events. Scoped to main specifically: the github-pages
+    # environment only allows deploying from main anyway, and the public
+    # report should reflect the stable branch, not in-progress develop.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
